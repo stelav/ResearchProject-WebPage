@@ -1,0 +1,29 @@
+#!/bin/bash
+
+start() {
+    mkdir -p /var/log/nginx
+    nginx
+    exec gunicorn site_stephen.main:app                  \
+                --bind localhost:8080                        \
+                --workers 2                                \
+                --timeout 600                               \
+                --log-level debug                          \
+                --access-logfile /var/log/site.log \
+                --capture-output
+}
+
+stop() {
+    pkill python
+    pkill nginx
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    *)
+        echo "Usage: $0 {start:stop}"
+esac
